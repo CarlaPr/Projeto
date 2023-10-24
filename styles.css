@@ -9,6 +9,7 @@
 :root{
     --color-white: #fff;
     --color-pink: #d12f7a;
+    --color-green: rgb(110, 164, 126);
 }
 
 html{
@@ -35,11 +36,14 @@ body {
 }
 
 .person-content{
-    height: 70%;
+    height: 100%;
     width: 50%;
 
     display: flex;
+    justify-content: center;
     align-items: center;
+
+    flex-direction: column;
 
     background: ivory;
 
@@ -47,11 +51,17 @@ body {
 
 .person-content div h1{
 
-    background: black;
-    color: white;
+    background: transparent;
 
     padding: 0px 4px;
 
     font-size: 4.5rem;
     line-height: 6rem;
+}
+
+@keyframes written_tex{
+    100%{
+        color: var(--color-white);
+    }
+    
 }

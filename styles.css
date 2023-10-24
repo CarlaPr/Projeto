@@ -6,6 +6,11 @@
     box-sizing: border-box;
 }
 
+:root{
+    --color-white: #fff;
+    --color-pink: #d12f7a;
+}
+
 html{
 
     scroll-behavior: smooth;
@@ -26,5 +31,27 @@ body {
     display: flex;
     align-items: center;
 
-    background: darkolivegreen;
+    background: rgb(110, 164, 126);
+}
+
+.person-content{
+    height: 70%;
+    width: 50%;
+
+    display: flex;
+    align-items: center;
+
+    background: ivory;
+
+}
+
+.person-content div h1{
+
+    background: black;
+    color: white;
+
+    padding: 0px 4px;
+
+    font-size: 4.5rem;
+    line-height: 6rem;
 }

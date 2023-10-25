@@ -1,4 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Berkshire+Swash&display=swap');
+
 /* IMPORTA UMA FONTE */
 
 
@@ -14,12 +16,14 @@
     --color-white: #fff;
     --color-pink: #d12f7a;          /* VARIAVEIS DE COR */
     --color-green: rgb(110, 164, 126);
+    --color-grey: rgba(255, 255, 255, 0.658);
 }
 
-html{
+body {
 
-    scroll-behavior: smooth;
-    font-size: 10px;
+    background-color:  var(--color-green);
+
+    margin: 0 auto;
 
 }
 
@@ -109,14 +113,7 @@ header .navegacao-primaria li a{
 
 }
 
-/*body {
 
-    font-family: 'Poppins', sans-serif;
-    max-width: 1200px;
-    margin: 0 auto;
-
-
-}*/
 
 
 /* CODIGO PARA DAR EFEITO AO ABRIR OU ATUALIZAR A PAGINA */
@@ -130,5 +127,23 @@ header .navegacao-primaria li a{
         opacity: 1;
         transform: translate3d(0, 0, 0);
     }
+
+}
+
+/* SEÇÃO PRINCIPAL SOBRE A EMPRESA */
+
+main {
+    background-color: white;
+    color: rgb(74, 110, 84);
+}
+
+main .sobre {
+
+    margin-top: 60px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 30px;
+    justify-content: center;
+    padding: 40px;
 
 }

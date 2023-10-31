@@ -165,13 +165,4 @@ main .sobre-informacoes {
     padding: 25px;
 }
 
-main .sobre-missao-valor-visao {
 
-    margin-top: 20px;
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 20px;
-    justify-content: center;
-    padding: 25px;
-    
-}

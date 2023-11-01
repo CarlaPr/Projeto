@@ -121,8 +121,6 @@ header .navegacao-primaria li a{
 }
 
 
-
-
 /* CODIGO PARA DAR EFEITO AO ABRIR OU ATUALIZAR A PAGINA */
 @keyframes inicializar {
     from {
@@ -207,18 +205,11 @@ main .sobre .sobre_titulo{
 }
 
 
-
 .servico .section-div-servico img {
 
     max-width: 100%;/* DIMINUI TAMANHO DA IMAGEM*/
 
 }
-
-
-
-
-
-
 
 
 .section-div-contato {
@@ -257,15 +248,21 @@ main .sobre .sobre_titulo{
 }
 
 
-.row {
+main .section-div-contato .contato_titulo h1{
+
+    text-align: center;
+
+}
+main .section-div-contato .row {
     
     padding: 0 20px;
     display: table;
+    width: 100%;
     background-color: var(--background-green);
 
 }
 
-form {
+main .section-div-contato form {
     background-color: var(--background-green);
     
     margin: 0 auto;
@@ -276,13 +273,13 @@ form {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-label {
+main .section-div-contato label {
     font-weight: bold;
     color: var(--font-green);
 
 }
 
-input[type="text"],
+main .section-div-contato input[type="text"],
 input[type="email"],
 textarea {
     color: #4CAF50;
@@ -297,28 +294,26 @@ textarea {
 
 }
 
-input[type="submit"] {
+main .section-div-contato input[type="submit"] {
+
     background-color: #4CAF50;
     color: #4CAF50;
     color: white;
     padding: 10px 20px;
     border: none;
-    border-radius: 4px;
+    border-radius: 44px;
     cursor: pointer;
+
 }
 
 input[type="submit"]:hover {
     background-color: #45a049;
+    
 }
 
 main .section-div-contato{
-    background-color: var(--background-green);
 
-/* Estilos para o corpo da página */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+    background-color: var(--background-green);
 
 }
 

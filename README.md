@@ -7,5 +7,3 @@ Projeto proposto da materia de Gestao de Sistemas Operacionais.
 A Rivest é uma empresa que visa monitorar a saúde dos seus animais com tecnologia.
 
 Contratando o nosso serviço a fazenda recebe uma coleira de monitoramento que possui um software. Além do auxilio, recebe alertas de cio, saúde e parto.
-
-comando para criar varias linhas em html --- header>h1+nav>ul>(li>a)*5

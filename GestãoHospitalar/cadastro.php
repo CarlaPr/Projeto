@@ -8,7 +8,6 @@ if(isset($_POST['submit'])){
     $sql_verificar = "SELECT cpf FROM pacientes WHERE cpf='$cpf'";
     $resultado_verificar = mysqli_query($mysqli, $sql_verificar);
 
-    // Verifica se houve erro na consulta
     if (empty($cpf)) {
         echo "Campo CPF não pode ser vazio.";
     } else {
@@ -50,7 +49,7 @@ if(isset($_POST['submit'])){
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="stylesLogin.css">
-    <title>Cadastro - Morello Clinic</title>
+    <title>Morello - Cadastro</title>
 
     <style>
 

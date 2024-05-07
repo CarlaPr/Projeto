@@ -9,7 +9,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Morello - Portal do Paciente</title>
 
     <style>
 
@@ -106,7 +106,7 @@
             margin-top: 10px;
             font-size: 18px;
             text-align: center;
-            color: #333;
+            color: black;
         }
     </style>
 </head>
@@ -131,18 +131,18 @@
     </header>
 
     <div class="container">
-        <div class="box" onclick="location.href='agendar_consulta.php';">
-            <img src="agenda.png" alt="Agendar Consulta">
+        <div class="box" onclick="location.href='agendamento.php';">
+            <img src="./componentes/imagens/historico1.png" alt="Agendar Consulta">
             <h2>Agendar Consulta</h2>
         </div>
 
         <div class="box" onclick="location.href='ver_resultados.php';">
-            <img src="resultados.png" alt="Ver Resultados">
+            <img src="./componentes/imagens/historico2.png" alt="Ver Resultados">
             <h2>Ver Resultados</h2>
         </div>
 
         <div class="box" onclick="location.href='historico.php';">
-            <img src="historico.png" alt="Histórico de Consultas">
+            <img src="./componentes/imagens/historico3.png" alt="Histórico de Consultas">
             <h2>Histórico de Consultas</h2>
         </div>
     </div>

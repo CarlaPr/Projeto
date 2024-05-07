@@ -9,9 +9,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Morello - Historico de Consultas</title>
 
-    <style>
+<style>
 
     @import url('https://fonts.googleapis.com/css?family=Poppins:400,700,900');
 
@@ -89,9 +89,8 @@
 
             <ul class="nav-menu">
                 <li><a href="index.html">Nosso Hospital</a></li>
-                <li><a href="colocar depois o caminho daqui">Portal Empresarial</a></li>
+                <li><a href="portalPaciente.php">Portal do Paciente</a></li>
                 <li><a href="logout.php">Sair da Conta</a></li>
-                
             </ul>
         </nav>
     </header>

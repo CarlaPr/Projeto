@@ -2,27 +2,20 @@
 include_once('protect.php');
 include_once('conexao.php');
 
-    // Verifica se o usuário está logado
-    if(isset($_SESSION['idpacientes'])) {
-        
-        $paciente_agendamento = $_SESSION['idpacientes'];
+if (isset($_SESSION['idpacientes'])) {
+    if (isset($_POST['tipo_agendamento']) && isset($_POST['data_agendamento']) && isset($_POST['hora_agendamento'])) {
+        $id_paciente_agendamento = $_SESSION['idpacientes'];
         $tipo_agendamento = $_POST['tipo_agendamento'];
         $data_agendamento = $_POST['data_agendamento'];
         $hora_agendamento = $_POST['hora_agendamento'];
 
-        // INSERE OS DADOS DO USUÁRIO NA TABELA
-        $sql = "INSERT INTO agendamento (paciente_agendamento, tipo_agendamento, data_agendamento, hora_agendamento) 
-                VALUES ('$paciente_agendamento', '$tipo_agendamento', '$data_agendamento', '$hora_agendamento')";
-
-        $resultado = mysqli_query($mysqli, $sql);
-
-        if($resultado){
-            echo 'Agendamento realizado com sucesso.';
-            header("Location: portalPaciente.php");
-
-        } else {
-            echo 'Não foi possível realizar o agendamento : ' . mysqli_error($mysqli);
-    }
+        // Verificar se já existe um agendamento na mesma data e hora
+        $check_query = "SELECT * FROM agendamento WHERE (id_paciente_agendamento != ? AND data_agendamento = ? AND hora_agendamento = ?)";
+        $check_stmt = $mysqli->prepare($check_query);
+        $check_stmt->bind_param("iss", $id_paciente_agendamento, $data_agendamento, $hora_agendamento);
+        $check_stmt->execute();
+        $check_stmt->store_result();
+            
 }
 ?>
 
@@ -32,7 +25,6 @@ include_once('conexao.php');
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Morello - Agendar Consultas</title>
-
     <style>
 
         @import url('https://fonts.googleapis.com/css?family=Poppins:400,700,900');
@@ -153,7 +145,7 @@ include_once('conexao.php');
 
 </head>
 <body>
-    
+    <script src="popupAgendamento.js"></script>
     <header>
         <div class="recuo"></div>
 
@@ -177,13 +169,13 @@ include_once('conexao.php');
 
         <form action="agendamento.php" method="post">
             
-            <input type="hidden" name="paciente_agendamento" value="<?php echo isset($_SESSION['idpacientes']) ? $_SESSION['idpacientes'] : ''; ?>">
+            <input type="hidden" name="id_paciente_agendamento" value="<?php echo isset($_SESSION['idpacientes']) ? $_SESSION['idpacientes'] : ''; ?>">
 
             <label for="tipo_agendamento">Tipo de Agendamento:</label>
             <select id="tipo_agendamento" name="tipo_agendamento" required>
-                <option value="consulta_medica">Consulta Médica</option>
-                <option value="exame">Exame</option>
-                <option value="procedimento">Procedimento</option>
+                <option value="Consulta Medica">Consulta Médica</option>
+                <option value="Exame">Exame</option>
+                <option value="Procedimento Médico">Procedimento</option>
             </select><br>
 
             <label for="data_agendamento">Data da Consulta:</label>
@@ -192,8 +184,35 @@ include_once('conexao.php');
             <label for="hora_agendamento">Hora da Consulta:</label>
             <input type="time" id="hora_agendamento" name="hora_agendamento" required><br>
 
-            <input type="submit" name="submit" value="Agendar">
+            <input type="submit" id="agendar" name="submit" value="Agendar">
             <br><br>
+            <?php
+                    if ($check_stmt->num_rows > 0) {
+                        echo "Desculpe, já existe um agendamento para outro paciente na mesma data e horário.";
+                    } else {
+                        //inserir o novo agendamento
+                        $insert_stmt = $mysqli->prepare("INSERT INTO agendamento (id_paciente_agendamento, tipo_agendamento, data_agendamento, hora_agendamento) VALUES (?, ?, ?, ?)");
+            
+                        if ($insert_stmt) {
+            
+                            $insert_stmt->bind_param("isss", $id_paciente_agendamento, $tipo_agendamento, $data_agendamento, $hora_agendamento);
+                            $insert_stmt->execute();
+            
+                            // Verificar se o agendamento foi inserido com sucesso
+                            if ($insert_stmt->affected_rows > 0) {
+                                echo 'Agendamento realizado com sucesso.';
+                            } else {
+                                echo 'Não foi possível realizar o agendamento.';
+                            }
+            
+                            $insert_stmt->close();
+                        } else {
+            
+                            echo 'Erro na preparação da consulta: ' . $mysqli->error;
+                        }
+                    }
+                }
+            ?>
 
         </form>
     </div>

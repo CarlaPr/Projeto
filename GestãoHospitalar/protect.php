@@ -1,9 +1,9 @@
 <?php
-session_start(); // Inicia a sessão em todas as páginas
+session_start();
 
-// Verifica se o usuário está logado
+
 if (!isset($_SESSION['nome'])) {
-    // O usuário não está logado, exibe a mensagem
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -91,7 +91,7 @@ if (!isset($_SESSION['nome'])) {
 </body>
 </html>
 <?php
-    // Encerra o script aqui
+
     die();
 }
 ?>

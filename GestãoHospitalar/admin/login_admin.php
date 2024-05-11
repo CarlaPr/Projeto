@@ -1,45 +1,49 @@
 <?php
-   require_once 'conexao.php';
 
+require_once 'conexao.php';
 session_start(); // Inicia a sessão
+$mensagem = "";
 
-if (isset($_POST['cpf']) && isset($_POST['senha'])){
-    $cpf = $mysqli->real_escape_string($_POST['cpf']);
+if (isset($_POST['email']) && isset($_POST['senha'])){
+
+    $email = $mysqli->real_escape_string($_POST['email']);
     $senha = $mysqli->real_escape_string($_POST['senha']);
 
-    if(strlen($cpf) == 0){
-        echo "Preencha seu cpf";
-    } elseif(strlen($senha) == 0){
+    if(strlen($email) == 0){
+        echo "Preencha seu email";
+    } else if(strlen($senha) == 0){
         echo "Preencha sua senha";
     } else {
-        $sql_code = "SELECT * FROM pacientes WHERE cpf = '$cpf' AND senha = '$senha'";
+        $sql_code = "SELECT * FROM usuarios WHERE email_usuario = '$email' AND senha_usuario = '$senha'";
         $sql_query = $mysqli->query($sql_code) or die("Falha na execução do código SQL: " . $mysqli->error);
 
         $quantidadeRequisitos = $sql_query->num_rows;
 
         if($quantidadeRequisitos == 1) {
 
-            $pacientes = $sql_query->fetch_assoc();
-            $_SESSION['cpf'] = $cpf;
-            $_SESSION['nome'] = $pacientes['nome']; 
-            $_SESSION['idpacientes'] = $pacientes['idpacientes']; 
+            $usuario = $sql_query->fetch_assoc();
+            $_SESSION['email'] = $email;
+            $_SESSION['nome_usuario'] = $usuario['nome_usuario']; 
+            $_SESSION['id_grupo'] = $usuario['id_grupo']; 
+            $_SESSION['idusuario'] = $usuario['idusuario']; 
             
-            header("Location: portalPaciente.php");
+            header("Location: portalAdmin.php");
             
         }else{
-            exit(); 
-            echo "Falha ao entrar! CPF ou senha incorretos";
+            $mensagem = "Falha ao entrar! CPF ou senha incorretos"; 
         }
     }
 }
+
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Morello - Login</title>
+    <title>Morello - Login Administrativo</title>
     <style> 
 
         @import url('https://fonts.googleapis.com/css?family=Poppins:400,700,900');
@@ -155,7 +159,7 @@ if (isset($_POST['cpf']) && isset($_POST['senha'])){
              font-weight: bold;
         }
 
-        input[type="text"],
+        input[type="email"],
         input[type="password"],
         select {
             width: 100%;
@@ -184,6 +188,7 @@ if (isset($_POST['cpf']) && isset($_POST['senha'])){
             text-align: center;
         }
 
+
     </style>
 </head>
 <body>
@@ -191,13 +196,14 @@ if (isset($_POST['cpf']) && isset($_POST['senha'])){
     <header>
         <div class="recuo"></div>
         <nav class="navegacao">
-             <img src="./componentes/imagens/logo2.png" alt="logo da empresa Morello com cores azuis" class="logo">
+             <img src="./imagens/logo2.png" alt="logo da empresa Morello com cores azuis" class="logo">
 
-            <ul class="nav-menu">
-                <li><a href="index.html">Nosso Hospital</a></li>
-                <li><a href="portalPaciente.php">Portal do Paciente</a></li>
-                <li><a href="administracao/portalAdmin.php">Portal Empresarial</a></li>
+             <ul class="nav-menu">
+                <li><a href="../../index.html">Nosso Hospital</a></li>
+                <li><a href="../../portalPaciente.php">Portal do Paciente</a></li>
+                <li><a href="portalAdmin.php">Portal Empresarial</a></li>
             </ul>
+
         </nav>
     </header>
 
@@ -209,8 +215,8 @@ if (isset($_POST['cpf']) && isset($_POST['senha'])){
 
             <div class="formulario">
 
-                <label for="cpf">CPF:</label>
-                <input type="text" id="cpf" name="cpf" required>
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
                 <br>
 
             </div>
@@ -224,16 +230,16 @@ if (isset($_POST['cpf']) && isset($_POST['senha'])){
             </div>
 
             <button type="submit">Login</button>
+            <?php if ($mensagem !== ""): ?>
+                <p id="msg "><?php echo $mensagem; ?></p>
+            <?php endif; ?>
 
         </form>
 
         <br>
-        <p>Ainda não tem uma conta? <a href="cadastro.php">Clique aqui</a> para se cadastrar.</p>
 
     </div>
 
-
-    </div>
 
 </body>
 </html>

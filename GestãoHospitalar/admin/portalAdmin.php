@@ -1,12 +1,15 @@
 <?php
 session_start();
+require_once 'conexao.php';
 
 if (!isset($_SESSION['email'])) {
     header("Location: login_admin.php");
     exit();
 }
 
-include('conexao.php');
+if($_SESSION['id_grupo'] == 2){
+    header('Location: portalUser.php');
+}
 
 ?>
 
@@ -116,7 +119,7 @@ include('conexao.php');
     <header>
         <nav class="navegacao">
 
-             <img src="../../../componentes/imagens/logo2.png" alt="logo da empresa Morello com cores azuis" class="logo">
+             <img src="./imagens/logo2.png" alt="logo da empresa Morello com cores azuis" class="logo">
 
             <h1>Bem vindo ao portal administrativo, <?php echo $_SESSION['nome_usuario']; ?>.</h1>
 
@@ -128,6 +131,18 @@ include('conexao.php');
         </nav>
     </header>
 
+    <div class="dashboard">
+
+        <div class="container">
+        <div class="box" onclick="location.href='listar_usuarios.php';">
+            <h2>Listar Usuarios</h2>
+        </div>
+
+        <div class="box" onclick="location.href='cadastrar_usuarios.php';">
+            <h2>Cadastrar Usuarios</h2>
+        </div>
+
+    </div>
 
     <div class="dashboard-2">
 

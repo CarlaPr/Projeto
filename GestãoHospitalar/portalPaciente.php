@@ -1,8 +1,7 @@
 <?php
 
-   require_once 'includePac/conexao.php';
-
-   require_once 'includePac/protect.php';
+   include('conexao.php');
+   include('protect.php');
 
 ?>
 
@@ -133,7 +132,7 @@
     </header>
 
     <div class="container">
-        <div class="box" onclick="location.href='includePac/agendamento.php';">
+        <div class="box" onclick="location.href='agendamento.php';">
             <img src="./componentes/imagens/historico1.png" alt="Agendar Consulta">
             <h2>Agendar Consulta</h2>
         </div>

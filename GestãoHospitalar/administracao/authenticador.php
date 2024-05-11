@@ -1,9 +1,8 @@
 <?php
 session_start();
-require_once 'includePac/conexao.php';
 
 
-if (!isset($_SESSION['nome'])) {
+if (!isset($_SESSION['nome_usuario'])) {
 
 ?>
 <!DOCTYPE html>

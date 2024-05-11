@@ -1,17 +1,21 @@
 <?php
+session_start();
 
-   require_once 'includePac/conexao.php';
+if (!isset($_SESSION['email'])) {
+    header("Location: login_admin.php");
+    exit();
+}
 
-   require_once 'includePac/protect.php';
+include('conexao.php');
 
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Morello - Portal do Paciente</title>
+    <title>Portal Administrativo - Morello</title>
 
     <style>
 
@@ -29,7 +33,7 @@
             margin-top: 10px;
             background-color: #74AFB2;
         }
-        
+
         .navegacao{
             background-color: rgba(255, 255, 255, 0.904);
             display: flex;
@@ -80,16 +84,16 @@
             margin: 20px auto;
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-start; 
             flex-wrap: wrap;
         }
 
         .box {
-            width: calc(33.33% - 20px);
+            width: calc(50% - 20px); 
             background-color: #fff;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            padding: 20px;
+            padding: 30px;
             margin-bottom: 20px;
             cursor: pointer;
             transition: transform 0.3s ease;
@@ -99,55 +103,58 @@
             transform: translateY(-5px);
         }
 
-        .box img {
-            max-width: 100%;
-            height: auto;
-        }
-
         .box h2 {
-            margin-top: 10px;
             font-size: 18px;
             text-align: center;
             color: black;
         }
-    </style>
+        
+        </style>
 </head>
 <body>
 
     <header>
-        <div class="recuo"></div>
-
         <nav class="navegacao">
 
-             <img src="./componentes/imagens/logo2.png" alt="logo da empresa Morello com cores azuis" class="logo">
+             <img src="./imagens/logo2.png" alt="logo da empresa Morello com cores azuis" class="logo">
 
-            <h1>Bem vindo ao portal do paciente, <?php echo $_SESSION['nome']; ?>.</h1>
+            <h1>Bem vindo ao portal administrativo, <?php echo $_SESSION['nome_usuario']; ?>.</h1>
 
             <ul class="nav-menu">
-                <li><a href="index.html">Nosso Hospital</a></li>
-                <li><a href="portalPaciente.php">Portal do Paciente</a></li>
+
                 <li><a href="logout.php">Sair da Conta</a></li>
                 
             </ul>
         </nav>
     </header>
 
-    <div class="container">
-        <div class="box" onclick="location.href='includePac/agendamento.php';">
-            <img src="./componentes/imagens/historico1.png" alt="Agendar Consulta">
+
+    <div class="dashboard-2">
+
+        <div class="container">
+        <div class="box" onclick="location.href='listar_pacientes.php';">
+            <h2>Listar Pacientes</h2>
+        </div>
+
+        <div class="box" onclick="location.href='cadastro_paciente.php';">
+            <h2>Cadastrar Pacientes</h2>
+        </div>
+
+    </div>
+
+    <div class="dashboard-3">
+
+        <div class="container">
+        <div class="box" onclick="location.href='agendar_paciente.php';">
             <h2>Agendar Consulta</h2>
         </div>
 
-        <div class="box" onclick="location.href='resultados.php';">
-            <img src="./componentes/imagens/historico2.png" alt="Ver Resultados">
-            <h2>Ver Resultados</h2>
-        </div>
 
-        <div class="box" onclick="location.href='historico.php';">
-            <img src="./componentes/imagens/historico3.png" alt="Histórico de Consultas">
+        <div class="box" onclick="location.href='historico_paciente.php';">
             <h2>Histórico de Consultas</h2>
         </div>
     </div>
 
 </body>
 </html>
+

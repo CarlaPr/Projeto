@@ -1,27 +1,29 @@
 <?php
+session_start();
+include_once('conexao.php');
 
 if(isset($_POST['submit'])){
-    require_once 'conexao.php';
+    $cpf = mysqli_real_escape_string($mysqli, $_POST['cpf']);
 
-    $cpf = $_POST['cpf'];
-    $cpf = mysqli_real_escape_string($mysqli, $cpf);
-
-    $sql_verificar = "SELECT cpf FROM pacientes WHERE cpf='$cpf'";
-    $resultado_verificar = mysqli_query($mysqli, $sql_verificar);
-
+    // Verifica se o CPF está vazio
     if (empty($cpf)) {
         echo "Campo CPF não pode ser vazio.";
     } else {
+        // Verifica se o CPF já está cadastrado
+        $sql_verificar = "SELECT cpf FROM pacientes WHERE cpf='$cpf'";
+        $resultado_verificar = mysqli_query($mysqli, $sql_verificar);
+
         if (mysqli_num_rows($resultado_verificar) > 0) { 
             echo "CPF já cadastrado. Por favor, tente novamente com um CPF diferente.";
         } else {
-            $nome = $_POST['nome'];
-            $data_nascimento = $_POST['data_nascimento'];
-            $sexo = $_POST['genero'];
-            $telefone = $_POST['telefone'];
-            $cep = $_POST['cep'];
-            $email = $_POST['email'];
-            $senha = $_POST['senha'];
+            // Recupera os outros dados do formulário
+            $nome = mysqli_real_escape_string($mysqli, $_POST['nome']);
+            $data_nascimento = mysqli_real_escape_string($mysqli, $_POST['data_nascimento']);
+            $sexo = mysqli_real_escape_string($mysqli, $_POST['genero']);
+            $telefone = mysqli_real_escape_string($mysqli, $_POST['telefone']);
+            $cep = mysqli_real_escape_string($mysqli, $_POST['cep']);
+            $email = mysqli_real_escape_string($mysqli, $_POST['email']);
+            $senha = mysqli_real_escape_string($mysqli, $_POST['senha']);
 
             // INSERE OS DADOS DO USUÁRIO NA TABELA
             $sql = "INSERT INTO pacientes (cpf, nome, data_nascimento, sexo, telefone, cep, email, senha) 
@@ -31,8 +33,6 @@ if(isset($_POST['submit'])){
 
             if ($resultado) {
                 echo "Usuário cadastrado com sucesso";
-                header("Location: login.php");
-
             } else {
                 echo "Erro ao cadastrar usuário: " . mysqli_error($mysqli);
             }
@@ -49,7 +49,7 @@ if(isset($_POST['submit'])){
     <meta http-equiv="X-UA-Compatible" content="IE-edge"> 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
+    <link rel="stylesheet" href="stylesLogin.css">
     <title>Morello - Cadastro</title>
 
     <style>
@@ -78,8 +78,8 @@ if(isset($_POST['submit'])){
             padding: 18px 40px;
             box-shadow: 0 0.1rem 0.5rem #ccc;
             width: 100%;
-        
         }
+
 
         .logo {
             width: 50px;
@@ -168,16 +168,16 @@ if(isset($_POST['submit'])){
 
 <body>
 
-    <header>
-        <div class="recuo"></div>
+<header>
         <nav class="navegacao">
-             <img src="./componentes/imagens/logo2.png" alt="logo da empresa Morello com cores azuis" class="logo">
+
+             <img src="./imagens/logo2.png" alt="logo da empresa Morello com cores azuis" class="logo">
 
             <ul class="nav-menu">
-                <li><a href="index.html">Nosso Hospital</a></li>
-                <li><a href="portalPaciente.php">Portal do Paciente</a></li>
-                <li><a href="colocar depois o caminho daqui">Portal Empresarial</a></li>
-                <li><a href="login.php"><span>Login</span></a></li>
+
+                <li><a href="portalAdministrativo.php">Portal Administrativo</a></li>
+                <li><a href="logout.php">Sair da Conta</a></li>
+                
             </ul>
         </nav>
     </header>
@@ -212,10 +212,11 @@ if(isset($_POST['submit'])){
         
         <label for="senha">Senha:</label><br>
         <input type="password" id="senha" name="senha" required><br><br>
-        
+
         <input type="submit" name="submit" id="submit">
         <br><br>
     </form>
     
 </body>
+
 </html>

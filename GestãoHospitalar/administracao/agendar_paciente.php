@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once 'conexao.php';
+include_once('conexao.php');
 
 ?>
 
@@ -134,18 +134,15 @@ require_once 'conexao.php';
 <body>
 
     <header>
-        <div class="recuo"></div>
-
         <nav class="navegacao">
 
-             <img src="./componentes/imagens/logo2.png" alt="logo da empresa Morello com cores azuis" class="logo">
-
-            <h1>Bem vindo ao portal do paciente, <?php echo $_SESSION['nome']; ?>.</h1>
+             <img src="./imagens/logo2.png" alt="logo da empresa Morello com cores azuis" class="logo">
 
             <ul class="nav-menu">
-                <li><a href="index.html">Nosso Hospital</a></li>
-                <li><a href="portalPaciente.php">Portal do Paciente</a></li>
+
+                <li><a href="portalAdministrativo.php">Portal Administrativo</a></li>
                 <li><a href="logout.php">Sair da Conta</a></li>
+                
             </ul>
         </nav>
     </header>

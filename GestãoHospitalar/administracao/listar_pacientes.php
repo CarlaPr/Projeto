@@ -1,16 +1,12 @@
 <?php
 session_start();
-require_once 'conexao.php';
-require_once 'protect.php';
+include_once('conexao.php');
 
-$idpacientes = $_SESSION['idpacientes'];
+$idusuario = $_SESSION['idusuario'];
 
-// Consulta ao banco de dados para obter as consultas do paciente
-$query_consultas = "SELECT nome, tipo_agendamento, data_agendamento, hora_agendamento 
-                    FROM pacientes 
-                    LEFT JOIN agendamento ON pacientes.idpacientes = agendamento.id_paciente_agendamento
-                    WHERE agendamento.id_paciente_agendamento = ?
-                    ORDER BY data_agendamento DESC";
+$query_consultas = "SELECT idpacientes, nome, cpf, email, telefone, sexo, data_nascimento, cep
+                    FROM pacientes";
+
 
 $stmt = $mysqli->prepare($query_consultas);
 
@@ -22,7 +18,7 @@ $stmt = $mysqli->prepare($query_consultas);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <title>Morello - Historico de Consultas</title>
+    <title>Morello - Pacientes</title>
 
 <style>
 
@@ -103,6 +99,7 @@ $stmt = $mysqli->prepare($query_consultas);
 
     #listar-Pacientes {
         margin-top: 20px;
+
     }
 
     #listar-Pacientes table {
@@ -141,44 +138,45 @@ $stmt = $mysqli->prepare($query_consultas);
 <body>
 
     <script src="custom.js"></script>
-    
-    <header>
-        <div class="recuo"></div>
 
+    <header>
         <nav class="navegacao">
 
-             <img src="./componentes/imagens/logo2.png" alt="logo da empresa Morello com cores azuis" class="logo">
-
-            <h1>Bem vindo ao portal do paciente, <?php echo $_SESSION['nome']; ?>.</h1>
+             <img src="./imagens/logo2.png" alt="logo da empresa Morello com cores azuis" class="logo">
 
             <ul class="nav-menu">
-                <li><a href="index.html">Nosso Hospital</a></li>
-                <li><a href="portalPaciente.php">Portal do Paciente</a></li>
+
+                <li><a href="portalAdministrativo.php">Portal Administrativo</a></li>
                 <li><a href="logout.php">Sair da Conta</a></li>
+                
             </ul>
         </nav>
     </header>
 
     <div class="historico">
-        <h4>Historico de Consultas</h4>
+        <h4>Pacientes</h4>
         <span id="msgAlerta"></span>
 
         <div id="listar-Pacientes">
             <table>
                 <thead>
                     <tr>
+                        <th>ID</th>
                         <th>Nome</th>
-                        <th>Tipo de Agendamento</th>
-                        <th>Data do Agendamento</th>
-                        <th>Hora do Agendamento</th>
+                        <th>CPF</th>
+                        <th>Email</th>
+                        <th>Telefone</th>
+                        <th>Sexo</th>
+                        <th>Data Nascimento</th>
+                        <th>CEP</th>
                         <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody>
+                <tr>
 
                     <?php
                     if ($stmt) {
-                        $stmt->bind_param("i", $idpacientes);
                         $stmt->execute();
                         
                         // Armazenar o resultado
@@ -187,24 +185,28 @@ $stmt = $mysqli->prepare($query_consultas);
                         // Verificar se há consultas retornadas
                         if ($stmt->num_rows > 0) {
 
-                            $stmt->bind_result($nome, $tipo_agendamento, $data_agendamento, $hora_agendamento);
+                            $stmt->bind_result($idpacientes, $nome, $cpf, $email, $telefone, $sexo, $data_nascimento, $cep);
                             
                             while ($stmt->fetch()) {
                                 echo "<tr>";
+                                echo "<td>" . $idpacientes . "</td>";
                                 echo "<td>" . $nome . "</td>";
-                                echo "<td>" . $tipo_agendamento . "</td>";
-                                echo "<td>" . $data_agendamento . "</td>";
-                                echo "<td>" . $hora_agendamento . "</td>";
-                                echo "<td> Editar</td>";
+                                echo "<td>" . $cpf . "</td>";
+                                echo "<td>" . $email . "</td>";
+                                echo "<td>" . $telefone . "</td>";
+                                echo "<td>" . $sexo . "</td>";
+                                echo "<td>" . $data_nascimento . "</td>";
+                                echo "<td>" . $cep . "</td>";
+                                echo "<td> Editar Excluir</td>";
                                 echo "</tr>";
                             }
                         } else {
-                            echo "<tr><td colspan='5'>Nenhuma consulta encontrada.</td></tr>";
+                            echo "<tr><td colspan='5'>Nenhum paciente encontrada.</td></tr>";
                         }
                     
                         $stmt->close();
                     } else {
-                        echo "Erro na preparação da consulta";
+                        echo "Erro na preparação";
                     }
                     ?>
 

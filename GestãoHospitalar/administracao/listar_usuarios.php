@@ -1,6 +1,6 @@
 <?php
 session_start();
-include_once('conexao.php');
+include_once('../DAO/conexao.php');
 
 if($_SESSION['id_grupo'] == 2){
     header('Location: portalUser.php');
@@ -81,11 +81,13 @@ $stmt = $mysqli->prepare($query_consultas);
     }
 
     body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 0;
-        background-color: #f0f0f0;
-    }
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url('../componentes/imagens/agenda_admin_back.jpg'); /* Substitua 'caminho_para_sua_imagem.jpg' pelo caminho da sua imagem de fundo */
+            background-size: cover;
+            background-position: center;
+        } 
 
     .historico {
         margin: 20px;
@@ -146,12 +148,12 @@ $stmt = $mysqli->prepare($query_consultas);
     <header>
         <nav class="navegacao">
 
-             <img src="./imagens/logo2.png" alt="logo da empresa Morello com cores azuis" class="logo">
+            <img src="../componentes/imagens/logo2.png" alt="logo da empresa Morello com cores azuis" class="logo">
 
             <ul class="nav-menu">
 
                 <li><a href="portalAdmin.php">Portal Administrativo</a></li>
-                <li><a href="logout.php">Sair da Conta</a></li>
+                <li><a href="../DAO/logout_admin.php">Sair da Conta</a></li>
                 
             </ul>
         </nav>
@@ -169,7 +171,6 @@ $stmt = $mysqli->prepare($query_consultas);
                         <th>Nome</th>
                         <th>Email</th>
                         <th>Grupo</th>
-                        <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -193,7 +194,6 @@ $stmt = $mysqli->prepare($query_consultas);
                                 echo "<td>" . $usuario . "</td>";
                                 echo "<td>" . $email_usuario . "</td>";
                                 echo "<td>" . $id_grupo . "</td>";
-                                echo "<td> Editar Excluir</td>";
                                 echo "</tr>";
                             }
                         } else {

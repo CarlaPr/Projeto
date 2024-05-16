@@ -1,11 +1,11 @@
 <?php
 session_start();
-include_once('conexao.php');
+include_once('../DAO/conexao.php');
 
 $idusuario = $_SESSION['idusuario'];
 
 // Consulta ao banco de dados para obter as consultas do paciente
-$query_consultas = "SELECT pacientes.idpacientes, pacientes.nome, agendamento.tipo_agendamento, agendamento.data_agendamento, agendamento.hora_agendamento 
+$query_consultas = "SELECT agendamento.id_agendamento, pacientes.idpacientes, pacientes.nome, agendamento.tipo_agendamento, agendamento.data_agendamento, agendamento.hora_agendamento 
                     FROM pacientes 
                     LEFT JOIN agendamento ON pacientes.idpacientes = agendamento.id_paciente_agendamento
                     WHERE agendamento.tipo_agendamento IS NOT NULL
@@ -17,7 +17,7 @@ $stmt = $mysqli->prepare($query_consultas);
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -80,11 +80,13 @@ $stmt = $mysqli->prepare($query_consultas);
     }
 
     body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 0;
-        background-color: #f0f0f0;
-    }
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url('../componentes/imagens/agenda_admin_back.jpg'); /* Substitua 'caminho_para_sua_imagem.jpg' pelo caminho da sua imagem de fundo */
+            background-size: cover;
+            background-position: center;
+        } 
 
     .historico {
         margin: 20px;
@@ -145,12 +147,12 @@ $stmt = $mysqli->prepare($query_consultas);
     <header>
         <nav class="navegacao">
 
-             <img src="./imagens/logo2.png" alt="logo da empresa Morello com cores azuis" class="logo">
+            <img src="../componentes/imagens/logo2.png" alt="logo da empresa Morello com cores azuis" class="logo">
 
             <ul class="nav-menu">
 
                 <li><a href="portalAdmin.php">Portal Administrativo</a></li>
-                <li><a href="logout.php">Sair da Conta</a></li>
+                <li><a href="../DAO/logout_admin.php">Sair da Conta</a></li>
                 
             </ul>
         </nav>
@@ -185,7 +187,7 @@ $stmt = $mysqli->prepare($query_consultas);
                         // Verificar se há consultas retornadas
                         if ($stmt->num_rows > 0) {
 
-                            $stmt->bind_result($idpacientes, $nome, $tipo_agendamento, $data_agendamento, $hora_agendamento);
+                            $stmt->bind_result($id_agendamento ,$idpacientes, $nome, $tipo_agendamento, $data_agendamento, $hora_agendamento);
                             
                             while ($stmt->fetch()) {
                                 echo "<tr>";
@@ -195,9 +197,9 @@ $stmt = $mysqli->prepare($query_consultas);
                                 echo "<td>" . $data_agendamento . "</td>";
                                 echo "<td>" . $hora_agendamento . "</td>";
                                 echo "<td> 
-                                <a href='edit.php?id=$idpacientes'>Editar</a>
-                                <a href='enviar_relatorio.php?id=$idpacientes'>Adicionar</a>
-                                 Excluir</td>";
+                                    <a href='editar_paciente_historico.php?id=$idpacientes'>Editar</a>
+                                    <a href='./includeAdm/excluir_agendamento.php?id_agendamento=$id_agendamento' onclick='return confirm(\"Tem certeza de que deseja excluir este agendamento?\")'>Excluir</a>
+                                </td>";
                                 echo "</tr>";
                             }
                         } else {

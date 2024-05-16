@@ -1,12 +1,12 @@
 <?php
-session_start();
-require_once 'conexao.php';
-require_once 'protect.php';
+
+include('../DAO/conexao.php');
+include('../DAO/protect.php');
 
 $idPaciente = $_SESSION['idpacientes'];
 
 function exibirRelatorios($mysqli, $idPaciente) {
-    $sql = "SELECT pacientes.nome, agendamento.tipo_agendamento, agendamento.data_agendamento, relatorios.relatorio
+    $sql = "SELECT pacientes.nome, agendamento.tipo_agendamento, agendamento.data_agendamento, relatorios.descricao_pac
             FROM pacientes
             LEFT JOIN agendamento ON pacientes.idpacientes = agendamento.id_paciente_agendamento
             LEFT JOIN relatorios ON agendamento.id_paciente_agendamento = relatorios.id_paciente_relatorio
@@ -15,13 +15,17 @@ function exibirRelatorios($mysqli, $idPaciente) {
     $stmt->bind_param("i", $idPaciente);
     $stmt->execute();
     $result = $stmt->get_result();
-    while ($row = $result->fetch_assoc()) {
-        echo "<tr>";
-        echo "<td>" . $row["nome"] . "</td>";
-        echo "<td>" . $row["tipo_agendamento"] . "</td>";
-        echo "<td>" . $row["data_agendamento"] . "</td>";
-        echo "<td>" . $row["relatorio"] . "</td>";
-        echo "</tr>";
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            echo "<tr>";
+            echo "<td>" . $row["nome"] . "</td>";
+            echo "<td>" . $row["tipo_agendamento"] . "</td>";
+            echo "<td>" . $row["data_agendamento"] . "</td>";
+            echo "<td>" . $row["descricao_pac"] . "</td>";
+            echo "</tr>";
+        }
+    } else {
+        echo "<tr><td colspan='4'>Nenhuma consulta encontrada.</td></tr>";
     }
     $stmt->close();
 }
@@ -94,8 +98,10 @@ function exibirRelatorios($mysqli, $idPaciente) {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f0f0f0;
-        }
+            background-image: url('../componentes/imagens/agenda_admin_back.jpg'); /* Substitua 'caminho_para_sua_imagem.jpg' pelo caminho da sua imagem de fundo */
+            background-size: cover;
+            background-position: center;
+        } 
 
         .container {
             margin: 20px;
@@ -145,6 +151,44 @@ function exibirRelatorios($mysqli, $idPaciente) {
             background-color: #f2f2f2;
         }
 
+        /* Estilos da Janela Modal */
+        .modal {
+            display: none; /* Oculta a janela modal por padrão */
+            position: fixed; /* Permite que a janela modal flutue sobre o conteúdo da página */
+            z-index: 1; /* Define a ordem de empilhamento */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto; /* Adiciona rolagem se necessário */
+            background-color: rgb(0,0,0); /* Cor de fundo escura */
+            background-color: rgba(0,0,0,0.4); /* Cor de fundo escura com transparência */
+        }
+
+        /* Conteúdo da janela modal */
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto; /* Centraliza a janela modal verticalmente */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%; /* Define a largura da janela modal */
+        }
+
+        /* Botão de fechar */
+        .fechar-modal {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .fechar-modal:hover,
+        .fechar-modal:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
     </style>
 </head>
 <body>
@@ -154,15 +198,14 @@ function exibirRelatorios($mysqli, $idPaciente) {
 
         <nav class="navegacao">
 
-        <img src="../../componentes/imagens/logo2.png" alt="logo da empresa Morello com cores azuis" class="logo">
-
+        <img src="../componentes/imagens/logo2.png" alt="logo da empresa Morello com cores azuis" class="logo">
 
             <h1>Bem vindo ao portal do paciente, <?php echo $_SESSION['nome']; ?>.</h1>
 
             <ul class="nav-menu">
-                <li><a href="index.html">Nosso Hospital</a></li>
+                <li><a href="../index.html">Nosso Hospital</a></li>
                 <li><a href="portalPaciente.php">Portal do Paciente</a></li>
-                <li><a href="logout.php">Sair da Conta</a></li>
+                <li><a href="../DAO/logout.php">Sair da Conta</a></li>
             </ul>
 
         </nav>
@@ -182,19 +225,54 @@ function exibirRelatorios($mysqli, $idPaciente) {
                         <th>Nome</th>
                         <th>Tipo de Agendamento</th>
                         <th>Data do Agendamento</th>
-                        <th>Relsultado</th>
+                        <th>Resultado</th>
                     </tr>
                 </thead>
-                    <tbody>
-                        <?php
-                            // Exibir os relatórios do paciente
-                            exibirRelatorios($mysqli, $idPaciente);
-
-                            $mysqli->close();
-                        ?>
-                    </tbody>
+                <tbody>
+                    <?php
+                        // Exibir os relatórios do paciente
+                        exibirRelatorios($mysqli, $idPaciente);
+                        $mysqli->close();
+                    ?>
+                </tbody>
             </table>
         </div>
     </div>
+
+    <!-- Janela Modal -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="fechar-modal">&times;</span>
+            <h2>Detalhes do Relatório</h2>
+            <div id="conteudo-relatorio"></div>
+        </div>
+    </div>
+
+    <!-- Script JavaScript -->
+    <script>
+        var modal = document.getElementById("modal");
+        var conteudoRelatorio = document.getElementById("conteudo-relatorio");
+        var linksRelatorio = document.querySelectorAll(".ver-relatorio");
+
+        linksRelatorio.forEach(function(link) {
+            link.addEventListener("click", function(event) {
+                event.preventDefault();
+                modal.style.display = "block";
+                var relatorio = this.getAttribute("data-relatorio");
+                conteudoRelatorio.innerHTML = relatorio;
+            });
+        });
+
+        var btnFechar = document.querySelector(".fechar-modal");
+        btnFechar.addEventListener("click", function() {
+            modal.style.display = "none";
+        });
+
+        window.addEventListener("click", function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        });
+    </script>
 </body>
 </html>

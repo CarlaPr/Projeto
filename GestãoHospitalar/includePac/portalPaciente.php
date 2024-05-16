@@ -1,24 +1,16 @@
 <?php
-session_start();
-require_once 'conexao.php';
 
-if (!isset($_SESSION['email'])) {
-    header("Location: login_admin.php");
-    exit();
-}
-
-if($_SESSION['id_grupo'] == 2){
-    header('Location: portalUser.php');
-}
+    include('../DAO/conexao.php');
+    include('../DAO/protect.php');
 
 ?>
 
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal Administrativo - Morello</title>
+    <title>Morello - Portal do Paciente</title>
 
     <style>
 
@@ -36,7 +28,7 @@ if($_SESSION['id_grupo'] == 2){
             margin-top: 10px;
             background-color: #74AFB2;
         }
-
+        
         .navegacao{
             background-color: rgba(255, 255, 255, 0.904);
             display: flex;
@@ -87,16 +79,16 @@ if($_SESSION['id_grupo'] == 2){
             margin: 20px auto;
             display: flex;
             justify-content: space-between;
-            align-items: flex-start; 
+            align-items: center;
             flex-wrap: wrap;
         }
 
         .box {
-            width: calc(50% - 20px); 
+            width: calc(33.33% - 20px);
             background-color: #fff;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            padding: 30px;
+            padding: 20px;
             margin-bottom: 20px;
             cursor: pointer;
             transition: transform 0.3s ease;
@@ -106,70 +98,55 @@ if($_SESSION['id_grupo'] == 2){
             transform: translateY(-5px);
         }
 
+        .box img {
+            max-width: 100%;
+            height: auto;
+        }
+
         .box h2 {
+            margin-top: 10px;
             font-size: 18px;
             text-align: center;
             color: black;
         }
-        
-        </style>
+    </style>
 </head>
 <body>
 
     <header>
+        <div class="recuo"></div>
+
         <nav class="navegacao">
 
-             <img src="./imagens/logo2.png" alt="logo da empresa Morello com cores azuis" class="logo">
+            <img src="../componentes/imagens/logo2.png" alt="logo da empresa Morello com cores azuis" class="logo">
 
-            <h1>Bem vindo ao portal administrativo, <?php echo $_SESSION['nome_usuario']; ?>.</h1>
+            <h1>Bem vindo ao portal do paciente, <?php echo $_SESSION['nome']; ?>.</h1>
 
             <ul class="nav-menu">
-
-                <li><a href="logout.php">Sair da Conta</a></li>
+                <li><a href="../index.html">Nosso Hospital</a></li>
+                <li><a href="portalPaciente.php">Portal do Paciente</a></li>
+                <li><a href="../DAO/logout.php">Sair da Conta</a></li>
                 
             </ul>
         </nav>
     </header>
 
-    <div class="dashboard">
-
-        <div class="container">
-        <div class="box" onclick="location.href='listar_usuarios.php';">
-            <h2>Listar Usuarios</h2>
-        </div>
-
-        <div class="box" onclick="location.href='cadastrar_usuarios.php';">
-            <h2>Cadastrar Usuarios</h2>
-        </div>
-
-    </div>
-
-    <div class="dashboard-2">
-
-        <div class="container">
-        <div class="box" onclick="location.href='listar_pacientes.php';">
-            <h2>Listar Pacientes</h2>
-        </div>
-
-        <div class="box" onclick="location.href='cadastro_paciente.php';">
-            <h2>Cadastrar Pacientes</h2>
-        </div>
-
-    </div>
-
-    <div class="dashboard-3">
-
-        <div class="container">
-        <div class="box" onclick="location.href='agendar_paciente.php';">
+    <div class="container">
+        <div class="box" onclick="location.href='agendamento.php';">
+            <img src="../componentes/imagens/historico1.png" alt="Agendar Consulta">
             <h2>Agendar Consulta</h2>
         </div>
 
+        <div class="box" onclick="location.href='resultados.php';">
+            <img src="../componentes/imagens/historico2.png" alt="Ver Resultados">
+            <h2>Ver Resultados</h2>
+        </div>
 
-        <div class="box" onclick="location.href='historico_paciente.php';">
+        <div class="box" onclick="location.href='historico.php';">
+            <img src="../componentes/imagens/historico3.png" alt="Histórico de Consultas">
             <h2>Histórico de Consultas</h2>
         </div>
     </div>
 
 </body>
 </html>
-

@@ -1,29 +1,27 @@
 <?php
-session_start();
-include_once('conexao.php');
 
 if(isset($_POST['submit'])){
-    $cpf = mysqli_real_escape_string($mysqli, $_POST['cpf']);
+    require_once 'conexao.php';
 
-    // Verifica se o CPF está vazio
+    $cpf = $_POST['cpf'];
+    $cpf = mysqli_real_escape_string($mysqli, $cpf);
+
+    $sql_verificar = "SELECT cpf FROM pacientes WHERE cpf='$cpf'";
+    $resultado_verificar = mysqli_query($mysqli, $sql_verificar);
+
     if (empty($cpf)) {
         echo "Campo CPF não pode ser vazio.";
     } else {
-        // Verifica se o CPF já está cadastrado
-        $sql_verificar = "SELECT cpf FROM pacientes WHERE cpf='$cpf'";
-        $resultado_verificar = mysqli_query($mysqli, $sql_verificar);
-
         if (mysqli_num_rows($resultado_verificar) > 0) { 
             echo "CPF já cadastrado. Por favor, tente novamente com um CPF diferente.";
         } else {
-            // Recupera os outros dados do formulário
-            $nome = mysqli_real_escape_string($mysqli, $_POST['nome']);
-            $data_nascimento = mysqli_real_escape_string($mysqli, $_POST['data_nascimento']);
-            $sexo = mysqli_real_escape_string($mysqli, $_POST['genero']);
-            $telefone = mysqli_real_escape_string($mysqli, $_POST['telefone']);
-            $cep = mysqli_real_escape_string($mysqli, $_POST['cep']);
-            $email = mysqli_real_escape_string($mysqli, $_POST['email']);
-            $senha = mysqli_real_escape_string($mysqli, $_POST['senha']);
+            $nome = $_POST['nome'];
+            $data_nascimento = $_POST['data_nascimento'];
+            $sexo = $_POST['genero'];
+            $telefone = $_POST['telefone'];
+            $cep = $_POST['cep'];
+            $email = $_POST['email'];
+            $senha = $_POST['senha'];
 
             // INSERE OS DADOS DO USUÁRIO NA TABELA
             $sql = "INSERT INTO pacientes (cpf, nome, data_nascimento, sexo, telefone, cep, email, senha) 
@@ -33,6 +31,8 @@ if(isset($_POST['submit'])){
 
             if ($resultado) {
                 echo "Usuário cadastrado com sucesso";
+                header("Location: login.php");
+
             } else {
                 echo "Erro ao cadastrar usuário: " . mysqli_error($mysqli);
             }
@@ -49,7 +49,7 @@ if(isset($_POST['submit'])){
     <meta http-equiv="X-UA-Compatible" content="IE-edge"> 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="stylesLogin.css">
+
     <title>Morello - Cadastro</title>
 
     <style>
@@ -78,8 +78,8 @@ if(isset($_POST['submit'])){
             padding: 18px 40px;
             box-shadow: 0 0.1rem 0.5rem #ccc;
             width: 100%;
+        
         }
-
 
         .logo {
             width: 50px;
@@ -105,13 +105,14 @@ if(isset($_POST['submit'])){
             color: brown;
         }     
 
-        
         body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
             margin: 0;
-            padding: 0;           
-        }
+            padding: 0;
+            background-image: url('../componentes/imagens/agenda_admin_back.jpg'); /* Substitua 'caminho_para_sua_imagem.jpg' pelo caminho da sua imagem de fundo */
+            background-size: cover;
+            background-position: center;
+        } 
 
         h1 {
             text-align: center;
@@ -168,16 +169,16 @@ if(isset($_POST['submit'])){
 
 <body>
 
-<header>
+    <header>
+        <div class="recuo"></div>
         <nav class="navegacao">
-
-             <img src="./imagens/logo2.png" alt="logo da empresa Morello com cores azuis" class="logo">
+             <img src="../componentes/imagens/logo2.png" alt="logo da empresa Morello com cores azuis" class="logo">
 
             <ul class="nav-menu">
-
-                <li><a href="portalAdmin.php">Portal Administrativo</a></li>
-                <li><a href="logout.php">Sair da Conta</a></li>
-                
+                <li><a href="../index.html">Nosso Hospital</a></li>
+                <li><a href="../includePac/portalPaciente.php">Portal do Paciente</a></li>
+                <li><a href="../administracao/portalAdmin.php">Portal Empresarial</a></li>
+                <li><a href="login.php"><span>Login</span></a></li>
             </ul>
         </nav>
     </header>
@@ -185,15 +186,55 @@ if(isset($_POST['submit'])){
     <h1>Cadastro de Pacientes</h1>
     <form action="cadastro.php" method="POST">
 
-        <label for="cpf">CPF:</label><br>
-        <input type="text" id="cpf" name="cpf" required><br><br>
+    <label for="cpf">CPF:</label><br>
+    <input type="text" id="cpf" name="cpf" pattern="[0-9]{3}\.[0-9]{3}\.[0-9]{3}-[0-9]{2}" title="Formato de CPF inválido. Use XXX.XXX.XXX-XX" maxlength="14" onkeypress="return onlyNumbers(event)" required>
+    <span id="cpf-error" style="color: red;"></span><br>
+
+
+
+        <script>
+        // Função para formatar o CPF conforme o usuário digita
+        document.getElementById('cpf').addEventListener('input', function (e) {
+            var cpf = e.target.value.replace(/\D/g, '');
+            if (cpf.length > 0) {
+                cpf = cpf.replace(/(\d{3})(\d)/, '$1.$2');
+                cpf = cpf.replace(/(\d{3})(\d)/, '$1.$2');
+                cpf = cpf.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+            }
+            e.target.value = cpf;
+        });
+         </script>
         
         <label for="nome">Nome:</label><br>
         <input type="text" id="nome" name="nome" required><br><br>
+
+        <script>
+            document.getElementById("nome").addEventListener('input', function(e) {
+            var nome = e.target.value;
+            var apenasLetras = /^[a-zA-Z\s]*$/;
+
+            if (!apenasLetras.test(nome)) {
+                e.target.value = nome.replace(/[^a-zA-Z\s]/g, '');
+              }
+         });
+        </script>
         
-        <label for="data_nascimento">Data de Nascimento:</label><br>
-        <input type="date" id="data_nascimento" name="data_nascimento" required><br><br>
+            <label for="data_nascimento">Data de Nascimento:</label><br>
+            <input type="date" id="data_nascimento" name="data_nascimento" min="2011-01-01" max="<?php echo date('Y-m-d'); ?>" required><br><br>
         
+            <script>
+             document.getElementById('data_nascimento').addEventListener('input', function (e) {
+            var inputDate = new Date(e.target.value);
+            var minDate = new Date('2011-01-01');
+
+            if (inputDate < minDate) {
+                e.target.setCustomValidity('Por favor, selecione ou digite uma data de nascimento a partir de 2011.');
+            } else {
+                e.target.setCustomValidity('');
+            }
+             });
+             </script>
+
         <label for="genero">Gênero:</label><br>
         <select id="genero" name="genero" required>
             <option value="Masculino">Masculino</option>
@@ -202,21 +243,54 @@ if(isset($_POST['submit'])){
         </select><br><br>
         
         <label for="cep">CEP:</label><br>
-        <input type="text" id="cep" name="cep" required><br><br>
+        <input type="text" id="cep" name="cep" maxlength="8" required><br><br>
         
         <label for="telefone">Telefone:</label><br>
         <input type="tel" id="telefone" name="telefone" required><br><br>
+
+        <script>
+        document.getElementById("telefone").addEventListener('input', function(e) {
+            var telefone = e.target.value.replace(/\D/g, '');
+
+            // Limitar o telefone a 11 caracteres
+            if (telefone.length > 11) {
+                telefone = telefone.substring(0, 11);
+            }
+
+            // Formatar o telefone
+            var formattedTelefone;
+            if (telefone.length === 11) {
+                formattedTelefone = telefone.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+            } else if (telefone.length === 10) {
+                formattedTelefone = telefone.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
+            } else {
+                formattedTelefone = telefone;
+            }
+
+            e.target.value = formattedTelefone;
+        });
+         </script>
+
         
         <label for="email">Email:</label><br>
-        <input type="email" id="email" name="email" required><br><br>
+        <input type="email" id="email" name="email" value="@gmail.com" required><br><br>
         
         <label for="senha">Senha:</label><br>
         <input type="password" id="senha" name="senha" required><br><br>
-
+        
         <input type="submit" name="submit" id="submit">
         <br><br>
     </form>
-    
-</body>
+    <script>
+        document.getElementById('agendamento_form').addEventListener('submit', function(e) {
+            var inputDate = new Date(document.getElementById('data_nascimento').value);
+            var minDate = new Date('2011-01-01');
 
+            if (inputDate < minDate) {
+                e.preventDefault(); // Impede o envio do formulário
+                alert('Por favor, selecione ou digite uma data de nascimento a partir de 2011.');
+            }
+        });
+    </script>
+</body>
 </html>

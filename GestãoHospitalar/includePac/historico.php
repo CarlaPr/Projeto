@@ -1,18 +1,17 @@
 <?php
-session_start();
-include_once('conexao.php');
+    include('../DAO/conexao.php');
+    include('../DAO/protect.php');
 
-$idusuario = $_SESSION['idusuario'];
+$idpacientes = $_SESSION['idpacientes'];
 
 // Consulta ao banco de dados para obter as consultas do paciente
-$query_consultas = "SELECT pacientes.idpacientes, pacientes.nome, agendamento.tipo_agendamento, agendamento.data_agendamento, agendamento.hora_agendamento 
+$query_consultas = "SELECT nome, tipo_agendamento, data_agendamento, hora_agendamento, id_agendamento
                     FROM pacientes 
                     LEFT JOIN agendamento ON pacientes.idpacientes = agendamento.id_paciente_agendamento
-                    WHERE agendamento.tipo_agendamento IS NOT NULL
-                    ORDER BY agendamento.data_agendamento DESC";
+                    WHERE agendamento.id_paciente_agendamento = '$idpacientes'
+                    ORDER BY data_agendamento DESC";
 
-
-$stmt = $mysqli->prepare($query_consultas);
+$resultado = mysqli_query($mysqli, $query_consultas);
 
 ?>
 
@@ -141,18 +140,22 @@ $stmt = $mysqli->prepare($query_consultas);
 <body>
 
     <script src="custom.js"></script>
-
+    
     <header>
+        <div class="recuo"></div>
+
         <nav class="navegacao">
 
-             <img src="./imagens/logo2.png" alt="logo da empresa Morello com cores azuis" class="logo">
+        <img src="../componentes/imagens/logo2.png" alt="logo da empresa Morello com cores azuis" class="logo">
 
-            <ul class="nav-menu">
+        <h1>Bem vindo ao portal do paciente, <?php echo $_SESSION['nome']; ?>.</h1>
 
-                <li><a href="portalAdmin.php">Portal Administrativo</a></li>
-                <li><a href="logout.php">Sair da Conta</a></li>
-                
-            </ul>
+        <ul class="nav-menu">
+            <li><a href="../index.html">Nosso Hospital</a></li>
+            <li><a href="portalPaciente.php">Portal do Paciente</a></li>
+            <li><a href="../DAO/logout.php">Sair da Conta</a></li>
+        </ul>
+
         </nav>
     </header>
 
@@ -164,7 +167,6 @@ $stmt = $mysqli->prepare($query_consultas);
             <table>
                 <thead>
                     <tr>
-                        <th>ID</th>
                         <th>Nome</th>
                         <th>Tipo de Agendamento</th>
                         <th>Data do Agendamento</th>
@@ -173,43 +175,23 @@ $stmt = $mysqli->prepare($query_consultas);
                     </tr>
                 </thead>
                 <tbody>
-                <tr>
-
                     <?php
-                    if ($stmt) {
-                        $stmt->execute();
-                        
-                        // Armazenar o resultado
-                        $stmt->store_result();
-                        
-                        // Verificar se há consultas retornadas
-                        if ($stmt->num_rows > 0) {
-
-                            $stmt->bind_result($idpacientes, $nome, $tipo_agendamento, $data_agendamento, $hora_agendamento);
-                            
-                            while ($stmt->fetch()) {
-                                echo "<tr>";
-                                echo "<td>" . $idpacientes . "</td>";
-                                echo "<td>" . $nome . "</td>";
-                                echo "<td>" . $tipo_agendamento . "</td>";
-                                echo "<td>" . $data_agendamento . "</td>";
-                                echo "<td>" . $hora_agendamento . "</td>";
-                                echo "<td> 
-                                <a href='edit.php?id=$idpacientes'>Editar</a>
-                                <a href='enviar_relatorio.php?id=$idpacientes'>Adicionar</a>
-                                 Excluir</td>";
-                                echo "</tr>";
-                            }
-                        } else {
-                            echo "<tr><td colspan='5'>Nenhuma consulta encontrada.</td></tr>";
+                    if ($resultado && mysqli_num_rows($resultado) > 0) {
+                        while ($consulta = mysqli_fetch_assoc($resultado)) {
+                            echo "<tr>";
+                            echo "<td>" . $consulta['nome'] . "</td>";
+                            echo "<td>" . $consulta['tipo_agendamento'] . "</td>";
+                            echo "<td>" . $consulta['data_agendamento'] . "</td>";
+                            echo "<td>" . $consulta['hora_agendamento'] . "</td>";
+                            echo "<td> 
+                                <a href='excluir_agendamento.php?id_agendamento={$consulta['id_agendamento']}' onclick='return confirm(\"Tem certeza de que deseja excluir este agendamento?\")'>Excluir</a>
+                            </td>";
+                            echo "</tr>";
                         }
-                    
-                        $stmt->close();
                     } else {
-                        echo "Erro na preparação da consulta";
+                        echo "<tr><td colspan='5'>Nenhuma consulta encontrada.</td></tr>";
                     }
                     ?>
-
                 </tbody>
             </table>
         </div>

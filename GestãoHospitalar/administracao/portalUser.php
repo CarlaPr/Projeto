@@ -1,12 +1,11 @@
 <?php
 session_start();
+require_once '../DAO/conexao.php';
 
 if (!isset($_SESSION['email'])) {
-    header("Location: login_admin.php");
+    header("Location: ../DAO/login_admin.php");
     exit();
 }
-
-include('conexao.php');
 
 ?>
 
@@ -116,7 +115,7 @@ include('conexao.php');
     <header>
         <nav class="navegacao">
 
-             <img src="../../../componentes/imagens/logo2.png" alt="logo da empresa Morello com cores azuis" class="logo">
+            <img src="../componentes/imagens/logo2.png" alt="logo da empresa Morello com cores azuis" class="logo">
 
             <h1>Bem vindo ao portal administrativo, <?php echo $_SESSION['nome_usuario']; ?>.</h1>
 

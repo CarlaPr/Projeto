@@ -1,6 +1,8 @@
 <?php
-session_start();
-include_once('conexao.php');
+
+include('../DAO/conexao.php');
+include('../DAO/protect.php');
+ob_start();
 
 ?>
 
@@ -70,8 +72,10 @@ include_once('conexao.php');
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f0f0f0;
-        }
+            background-image: url('../componentes/imagens/agenda_admin_back.jpg'); /* Substitua 'caminho_para_sua_imagem.jpg' pelo caminho da sua imagem de fundo */
+            background-size: cover;
+            background-position: center;
+        } 
 
         .container {
             margin: 20px;
@@ -134,16 +138,20 @@ include_once('conexao.php');
 <body>
 
     <header>
+        <div class="recuo"></div>
+
         <nav class="navegacao">
 
-             <img src="./imagens/logo2.png" alt="logo da empresa Morello com cores azuis" class="logo">
+        <img src="../componentes/imagens/logo2.png" alt="logo da empresa Morello com cores azuis" class="logo">
 
-            <ul class="nav-menu">
+        <h1>Bem vindo ao portal do paciente, <?php echo $_SESSION['nome']; ?>.</h1>
 
-                <li><a href="portalAdmin.php">Portal Administrativo</a></li>
-                <li><a href="logout.php">Sair da Conta</a></li>
-                
-            </ul>
+        <ul class="nav-menu">
+            <li><a href="../index.html">Nosso Hospital</a></li>
+            <li><a href="portalPaciente.php">Portal do Paciente</a></li>
+            <li><a href="../DAO/logout.php">Sair da Conta</a></li>
+        </ul>
+
         </nav>
     </header>
 
@@ -151,10 +159,10 @@ include_once('conexao.php');
 
         <h2>Agendamento</h2>
 
-        <form action="agendar_paciente.php" method="post">
+        <form action="agendamento.php" method="post">
             
-            <label for="cpf">CPF do Paciente:</label><br>
-            <input type="text" id="cpf" name="cpf" required><br>
+            <input type="hidden" name="id_paciente_agendamento" value="<?php echo isset($_SESSION['idpacientes']) ? $_SESSION['idpacientes'] : ''; ?>">
+            
 
             <label for="tipo_agendamento">Tipo de Agendamento:</label>
             <select id="tipo_agendamento" name="tipo_agendamento" required>
@@ -162,62 +170,59 @@ include_once('conexao.php');
                 <option value="Exame">Exame</option>
                 <option value="Procedimento Médico">Procedimento</option>
             </select><br>
+            <label for="data_agendamento">Data do Agendamento:</label><br>
+            <input type="date" id="data_agendamento" name="data_agendamento" min="2024-05-01" max="2024-12-01"<?php echo date('Y-m-d'); ?> required><br>
+        
+            <script>
+             document.getElementById('data_agendamento').addEventListener('input', function (e) {
+                 var inputDate = new Date(e.target.value);
+                 var minDate = new Date('2024-05-01');
 
-            <label for="data_agendamento">Data da Consulta:</label>
-            <input type="date" id="data_agendamento" name="data_agendamento" required><br>
+                 if (inputDate < minDate) {
+                    e.target.setCustomValidity('Por favor, selecione ou digite uma data a partir de 2024/05.');
+                 } else {
+                    e.target.setCustomValidity('');
+                 }
+            });
+            </script>
 
             <label for="hora_agendamento">Hora da Consulta:</label>
-            <input type="time" id="hora_agendamento" name="hora_agendamento" required><br>
+            <input type="time" id="hora_agendamento" name="hora_agendamento" min="08:00" max="18:00"required><br>
 
             <?php
 
-                if (isset($_POST['cpf']) && isset($_POST['tipo_agendamento']) && isset($_POST['data_agendamento']) && isset($_POST['hora_agendamento'])) {
-                    $cpf = mysqli_real_escape_string($mysqli, $_POST['cpf']);
-                    $id_paciente_agendamento = $_SESSION['idpacientes'];
-                    $tipo_agendamento = $_POST['tipo_agendamento'];
-                    $data_agendamento = $_POST['data_agendamento'];
-                    $hora_agendamento = $_POST['hora_agendamento'];
+                if ($_SERVER["REQUEST_METHOD"] === "POST") {
+                    if (isset($_SESSION['idpacientes']) && isset($_POST['tipo_agendamento']) && isset($_POST['data_agendamento']) && isset($_POST['hora_agendamento'])) {
+                        $id_paciente_agendamento = $_SESSION['idpacientes'];
+                        $tipo_agendamento = $_POST['tipo_agendamento'];
+                        $data_agendamento = $_POST['data_agendamento'];
+                        $hora_agendamento = $_POST['hora_agendamento'];
 
-                    // Verificar se já existe um agendamento na mesma data e hora
-                    $check_query = "SELECT * FROM agendamento WHERE id_paciente_agendamento != ? AND data_agendamento = ? AND hora_agendamento = ?";
-                    $check_stmt = $mysqli->prepare($check_query);
-                    
-                    if ($check_stmt) {
-                        $check_stmt->bind_param("iss", $id_paciente_agendamento, $data_agendamento, $hora_agendamento);
-                        $check_stmt->execute();
-                        $check_stmt->store_result();
-                        
-                        // Verifica se a execução da consulta foi bem-sucedida
-                        if ($check_stmt->num_rows > 0) {
-                            echo "Desculpe, já existe um agendamento para outro paciente na mesma data e horário.";
-                        } else {
-                            // Inserir o novo agendamento
-                            $insert_stmt = $mysqli->prepare("INSERT INTO agendamento (id_paciente_agendamento, cpf_paciente, tipo_agendamento, data_agendamento, hora_agendamento) 
-                                                                VALUES (?, ?, ?, ?, ?) WHERE cpf_paciente");
-                    
-                            if ($insert_stmt) {
-                                $insert_stmt->bind_param("isss", $id_paciente_agendamento, $cpf, $tipo_agendamento, $data_agendamento, $hora_agendamento);
-                                $insert_stmt->execute();
-                    
-                                // Verificar se o agendamento foi inserido com sucesso
-                                if ($insert_stmt->affected_rows > 0) {
-                                    echo 'Agendamento realizado com sucesso.';
+                        // Verificar se já existe um agendamento na mesma data e hora
+                        $check_query = "SELECT * FROM agendamento WHERE id_paciente_agendamento != $id_paciente_agendamento AND data_agendamento = '$data_agendamento' AND hora_agendamento = '$hora_agendamento'";
+                        $check_result = $mysqli->query($check_query);
+
+                        if ($check_result) {
+                            if ($check_result->num_rows > 0) {
+                                echo "Desculpe, já existe um agendamento para outro paciente na mesma data e horário.";
+                            } else {
+                                // Inserir o novo agendamento
+                                $insert_query = "INSERT INTO agendamento (id_paciente_agendamento, tipo_agendamento, data_agendamento, hora_agendamento) VALUES ($id_paciente_agendamento, '$tipo_agendamento', '$data_agendamento', '$hora_agendamento')";
+                                $insert_result = $mysqli->query($insert_query);
+
+                                if ($insert_result) {
+                                    header("Location: historico.php");
+                                    exit();
                                 } else {
                                     echo 'Não foi possível realizar o agendamento.';
                                 }
-                    
-                                $insert_stmt->close();
-                            } else {
-                                echo 'Erro na preparação da consulta de inserção: ' . $mysqli->error;
                             }
+                        } else {
+                            echo 'Erro na execução da consulta: ' . $mysqli->error;
                         }
-
-                        $check_stmt->close();
-                    } else {
-                        echo 'Erro na preparação da consulta de verificação: ' . $mysqli->error;
                     }
                 }
-            ?>
+                ?>
 
             <input type="submit" id="agendar" name="submit" value="Agendar">
             <br><br>

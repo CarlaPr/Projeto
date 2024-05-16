@@ -1,9 +1,9 @@
 <?php
 session_start();
-require_once 'conexao.php';
+require_once '../DAO/conexao.php';
 
 if (!isset($_SESSION['email'])) {
-    header("Location: login_admin.php");
+    header("Location: ../DAO/login_admin.php");
     exit();
 }
 
@@ -19,6 +19,7 @@ if($_SESSION['id_grupo'] == 2){
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal Administrativo - Morello</title>
+
 
     <style>
 
@@ -119,13 +120,13 @@ if($_SESSION['id_grupo'] == 2){
     <header>
         <nav class="navegacao">
 
-             <img src="./imagens/logo2.png" alt="logo da empresa Morello com cores azuis" class="logo">
+            <img src="../componentes/imagens/logo2.png" alt="logo da empresa Morello com cores azuis" class="logo">
 
             <h1>Bem vindo ao portal administrativo, <?php echo $_SESSION['nome_usuario']; ?>.</h1>
 
             <ul class="nav-menu">
 
-                <li><a href="logout.php">Sair da Conta</a></li>
+                <li><a href="../DAO/logout_admin.php">Sair da Conta</a></li>
                 
             </ul>
         </nav>
@@ -138,10 +139,6 @@ if($_SESSION['id_grupo'] == 2){
             <h2>Listar Usuarios</h2>
         </div>
 
-        <div class="box" onclick="location.href='cadastrar_usuarios.php';">
-            <h2>Cadastrar Usuarios</h2>
-        </div>
-
     </div>
 
     <div class="dashboard-2">
@@ -151,7 +148,7 @@ if($_SESSION['id_grupo'] == 2){
             <h2>Listar Pacientes</h2>
         </div>
 
-        <div class="box" onclick="location.href='cadastro_paciente.php';">
+        <div class="box" onclick="location.href='includeAdm/cadastro_paciente.php';">
             <h2>Cadastrar Pacientes</h2>
         </div>
 
@@ -160,7 +157,7 @@ if($_SESSION['id_grupo'] == 2){
     <div class="dashboard-3">
 
         <div class="container">
-        <div class="box" onclick="location.href='agendar_paciente.php';">
+        <div class="box" onclick="location.href='includeAdm/agendar_paciente.php';">
             <h2>Agendar Consulta</h2>
         </div>
 

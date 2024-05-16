@@ -1,51 +1,46 @@
 <?php
+   require_once 'conexao.php';
 
-require_once 'conexao.php';
 session_start(); // Inicia a sessão
-$mensagem = "";
 
-if (isset($_POST['email']) && isset($_POST['senha'])){
-
-    $email = $mysqli->real_escape_string($_POST['email']);
+if (isset($_POST['cpf']) && isset($_POST['senha'])){
+    $cpf = $mysqli->real_escape_string($_POST['cpf']);
     $senha = $mysqli->real_escape_string($_POST['senha']);
 
-    if(strlen($email) == 0){
-        echo "Preencha seu email";
-    } else if(strlen($senha) == 0){
+    if(strlen($cpf) == 0){
+        echo "Preencha seu cpf";
+    } elseif(strlen($senha) == 0){
         echo "Preencha sua senha";
     } else {
-        $sql_code = "SELECT * FROM usuarios WHERE email_usuario = '$email' AND senha_usuario = '$senha'";
+        $sql_code = "SELECT * FROM pacientes WHERE cpf = '$cpf' AND senha = '$senha'";
         $sql_query = $mysqli->query($sql_code) or die("Falha na execução do código SQL: " . $mysqli->error);
 
         $quantidadeRequisitos = $sql_query->num_rows;
 
         if($quantidadeRequisitos == 1) {
 
-            $usuario = $sql_query->fetch_assoc();
-            $_SESSION['email'] = $email;
-            $_SESSION['nome_usuario'] = $usuario['nome_usuario']; 
-            $_SESSION['id_grupo'] = $usuario['id_grupo']; 
-            $_SESSION['idusuario'] = $usuario['idusuario']; 
+            $pacientes = $sql_query->fetch_assoc();
+            $_SESSION['cpf'] = $cpf;
+            $_SESSION['nome'] = $pacientes['nome']; 
+            $_SESSION['idpacientes'] = $pacientes['idpacientes']; 
             
-            header("Location: portalAdmin.php");
+            header("Location: ../includePac/portalPaciente.php");
             
         }else{
-            $mensagem = "Falha ao entrar! CPF ou senha incorretos"; 
+            header("Location: login.php");
         }
     }
 }
-
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Morello - Login Administrativo</title>
-    <style> 
+    <title>Morello - Login</title>
 
+<style> 
         @import url('https://fonts.googleapis.com/css?family=Poppins:400,700,900');
 
         * {
@@ -58,11 +53,13 @@ if (isset($_POST['email']) && isset($_POST['senha'])){
         }
 
         body {
-            font-family: 'Poppins', sans-serif;
+            font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f0f0f0;
-        }
+            background-image: url('../componentes/imagens/agenda_admin_back.jpg'); /* Substitua 'caminho_para_sua_imagem.jpg' pelo caminho da sua imagem de fundo */
+            background-size: cover;
+            background-position: center;
+        } 
 
         .recuo{
             margin-top: 10px;
@@ -159,7 +156,7 @@ if (isset($_POST['email']) && isset($_POST['senha'])){
              font-weight: bold;
         }
 
-        input[type="email"],
+        input[type="text"],
         input[type="password"],
         select {
             width: 100%;
@@ -188,7 +185,6 @@ if (isset($_POST['email']) && isset($_POST['senha'])){
             text-align: center;
         }
 
-
     </style>
 </head>
 <body>
@@ -196,14 +192,13 @@ if (isset($_POST['email']) && isset($_POST['senha'])){
     <header>
         <div class="recuo"></div>
         <nav class="navegacao">
-             <img src="./imagens/logo2.png" alt="logo da empresa Morello com cores azuis" class="logo">
+             <img src="../componentes/imagens/logo2.png" alt="logo da empresa Morello com cores azuis" class="logo">
 
-             <ul class="nav-menu">
-                <li><a href="../../index.html">Nosso Hospital</a></li>
-                <li><a href="../../portalPaciente.php">Portal do Paciente</a></li>
-                <li><a href="portalAdmin.php">Portal Empresarial</a></li>
+            <ul class="nav-menu">
+                <li><a href="../index.html">Nosso Hospital</a></li>
+                <li><a href="../includePac/portalPaciente.php">Portal do Paciente</a></li>
+                <li><a href="../administracao/portalAdmin.php">Portal Empresarial</a></li>
             </ul>
-
         </nav>
     </header>
 
@@ -215,8 +210,8 @@ if (isset($_POST['email']) && isset($_POST['senha'])){
 
             <div class="formulario">
 
-                <label for="email">Email:</label>
-                <input type="email" id="email" name="email" required>
+                <label for="cpf">CPF:</label>
+                <input type="text" id="cpf" name="cpf" pattern="[0-9]{3}\.[0-9]{3}\.[0-9]{3}-[0-9]{2}" title="Formato de CPF inválido. Use XXX.XXX.XXX-XX" maxlength="14" required>
                 <br>
 
             </div>
@@ -230,16 +225,28 @@ if (isset($_POST['email']) && isset($_POST['senha'])){
             </div>
 
             <button type="submit">Login</button>
-            <?php if ($mensagem !== ""): ?>
-                <p id="msg "><?php echo $mensagem; ?></p>
-            <?php endif; ?>
 
         </form>
 
         <br>
+        <p>Ainda não tem uma conta? <a href="cadastro.php">Clique aqui</a> para se cadastrar.</p>
 
     </div>
+    <script>
+        // Função para formatar o CPF conforme o usuário digita
+        document.getElementById('cpf').addEventListener('input', function (e) {
+            var cpf = e.target.value.replace(/\D/g, '');
+            if (cpf.length > 0) {
+                cpf = cpf.replace(/(\d{3})(\d)/, '$1.$2');
+                cpf = cpf.replace(/(\d{3})(\d)/, '$1.$2');
+                cpf = cpf.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+            }
+            e.target.value = cpf;
+        });
+    </script>
 
+
+    </div>
 
 </body>
 </html>

@@ -1,15 +1,12 @@
 <?php
 session_start();
-include_once('conexao.php');
+include_once('../DAO/conexao.php');
 
 $idusuario = $_SESSION['idusuario'];
 
-$query_consultas = "SELECT idpacientes, nome, cpf, email, telefone, sexo, data_nascimento, cep
-                    FROM pacientes";
+$query_consultas = "SELECT idpacientes, nome, cpf, email, telefone, sexo, data_nascimento, cep FROM pacientes";
 
-
-$stmt = $mysqli->prepare($query_consultas);
-
+$resultado = mysqli_query($mysqli, $query_consultas);
 ?>
 
 <!DOCTYPE html>
@@ -76,11 +73,13 @@ $stmt = $mysqli->prepare($query_consultas);
     }
 
     body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 0;
-        background-color: #f0f0f0;
-    }
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url('../componentes/imagens/agenda_admin_back.jpg'); /* Substitua 'caminho_para_sua_imagem.jpg' pelo caminho da sua imagem de fundo */
+            background-size: cover;
+            background-position: center;
+        } 
 
     .historico {
         margin: 20px;
@@ -142,12 +141,12 @@ $stmt = $mysqli->prepare($query_consultas);
     <header>
         <nav class="navegacao">
 
-             <img src="./imagens/logo2.png" alt="logo da empresa Morello com cores azuis" class="logo">
+            <img src="../componentes/imagens/logo2.png" alt="logo da empresa Morello com cores azuis" class="logo">
 
             <ul class="nav-menu">
 
             <li><a href="portalAdmin.php">Portal Administrativo</a></li>
-                <li><a href="logout.php">Sair da Conta</a></li>
+                <li><a href="../DAO/logout_admin.php">Sair da Conta</a></li>
                 
             </ul>
         </nav>
@@ -174,42 +173,33 @@ $stmt = $mysqli->prepare($query_consultas);
                 </thead>
                 <tbody>
                 <tr>
-
-                    <?php
-                    if ($stmt) {
-                        $stmt->execute();
-                        
-                        // Armazenar o resultado
-                        $stmt->store_result();
-                        
-                        // Verificar se há consultas retornadas
-                        if ($stmt->num_rows > 0) {
-
-                            $stmt->bind_result($idpacientes, $nome, $cpf, $email, $telefone, $sexo, $data_nascimento, $cep);
-                            
-                            while ($stmt->fetch()) {
+                <main></main>    
+                <?php
+                    if ($resultado) {
+                        if (mysqli_num_rows($resultado) > 0) {
+                            while ($row = mysqli_fetch_assoc($resultado)) {
                                 echo "<tr>";
-                                echo "<td>" . $idpacientes . "</td>";
-                                echo "<td>" . $nome . "</td>";
-                                echo "<td>" . $cpf . "</td>";
-                                echo "<td>" . $email . "</td>";
-                                echo "<td>" . $telefone . "</td>";
-                                echo "<td>" . $sexo . "</td>";
-                                echo "<td>" . $data_nascimento . "</td>";
-                                echo "<td>" . $cep . "</td>";
-                                echo "<td> Editar Excluir</td>";
+                                echo "<td>" . htmlspecialchars($row['idpacientes']) . "</td>";
+                                echo "<td>" . htmlspecialchars($row['nome']) . "</td>";
+                                echo "<td>" . htmlspecialchars($row['cpf']) . "</td>";
+                                echo "<td>" . htmlspecialchars($row['email']) . "</td>";
+                                echo "<td>" . htmlspecialchars($row['telefone']) . "</td>";
+                                echo "<td>" . htmlspecialchars($row['sexo']) . "</td>";
+                                echo "<td>" . htmlspecialchars($row['data_nascimento']) . "</td>";
+                                echo "<td>" . htmlspecialchars($row['cep']) . "</td>";
+                                echo "<td>
+                                <a href='./includeAdm/excluir_paciente_listar.php?idpacientes=" . htmlspecialchars($row['idpacientes']) . "' onclick='return confirm(\"Tem certeza de que deseja excluir este paciente?\")'>Excluir</a>
+                                </td>";
                                 echo "</tr>";
                             }
                         } else {
-                            echo "<tr><td colspan='5'>Nenhum paciente encontrada.</td></tr>";
+                            echo "<tr><td colspan='9'>Nenhum paciente encontrado.</td></tr>";
                         }
-                    
-                        $stmt->close();
                     } else {
-                        echo "Erro na preparação";
+                        echo "<tr><td colspan='9'>Erro ao executar a consulta.</td></tr>";
                     }
                     ?>
-
+                </main>
                 </tbody>
             </table>
         </div>

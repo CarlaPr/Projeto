@@ -1,8 +1,9 @@
 <?php
 session_start();
+include('conexao.php');
 
 
-if (!isset($_SESSION['nome_usuario'])) {
+if (!isset($_SESSION['nome'])) {
 
 ?>
 <!DOCTYPE html>
@@ -83,7 +84,7 @@ if (!isset($_SESSION['nome_usuario'])) {
         <br>
 
         <div class="mensagem-login">
-            <a href="login.php">ENTRAR</a>
+            <a href="../DAO/login.php">ENTRAR</a>
          </div>
         
 
@@ -91,8 +92,11 @@ if (!isset($_SESSION['nome_usuario'])) {
 </body>
 </html>
 <?php
-
     die();
-}
+    }
+
+    $idpaciente = $_SESSION['idpacientes'];
+    $nome = $_SESSION['nome'];
+
 ?>
 
